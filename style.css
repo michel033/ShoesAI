@@ -140,3 +140,11 @@ img {
         width: 100%;
     }
 }
+#imge-loaded {
+    display: none; 
+}
+
+#upload-message {
+    font-size: 16px;
+    color: gray;
+}

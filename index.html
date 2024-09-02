@@ -32,7 +32,8 @@
                     <input type="file" accept="image/*" onchange="loadImage(event)">
                 </label>
                 <br><br>
-                <img id="imge-loaded" width="224" height="224" alt="Uploaded Image">
+                <div id="upload-message">Upload an image</div>
+                <img id="imge-loaded" width="224" height="224" alt="Uploaded Image" style="display: none;">
             </div>
             <div class="predictions-section">
                 <div class="predictions-header">
@@ -84,6 +85,7 @@
     <script>
         async function loadImage(event) {
             var image = document.getElementById('imge-loaded');
+            var uploadMessage = document.getElementById('upload-message');
             var file = event.target.files[0];
             var reader = new FileReader();
 
@@ -97,6 +99,10 @@
                     canvas.height = 224;
                     ctx.drawImage(img, 0, 0, 224, 224);
                     image.src = canvas.toDataURL();
+
+                    // Hide the upload message and show the image
+                    uploadMessage.style.display = 'none';
+                    image.style.display = 'block';
 
                     const output = tf.browser.fromPixels(canvas);
                     const tensor = output.expandDims(0);
