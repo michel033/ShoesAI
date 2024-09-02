@@ -1,1 +1,154 @@
-<h1>Hello World !</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoe Master</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0" async></script>
+    <script async>
+        async function loadModel() {
+            console.log("Loading The Model....");
+            try {
+                globalThis.TensorFlowModel = await tf.loadGraphModel("./tfjs/model.json");
+                console.log("Model loaded successfully");
+            } catch (error) {
+                console.error("Error loading model:", error);
+            }
+        }
+
+        window.onload = loadModel;
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Shoe Master</h1>
+        <div class="prediction-container">
+            <div class="image-section">
+                <label class="upload-btn">
+                    Choose File
+                    <input type="file" accept="image/*" onchange="loadImage(event)">
+                </label>
+                <br><br>
+                <img id="imge-loaded" width="224" height="224" alt="Uploaded Image">
+            </div>
+            <div class="predictions-section">
+                <div class="predictions-header">
+                    <h2>Predictions :</h2>
+                    <h2 class="inference-time">Inference Time: <span id="inference-time"></span></h2>
+                </div>
+                <div id="image-info"></div>
+                <div id="prediction-bars">
+                    <div class="prediction" id="ballet-flat">
+                        <label>Ballet Flat</label>
+                        <div class="progress-bar">
+                            <div class="progress" id="ballet-flat-bar"></div>
+                            <span id="ballet-flat-percentage" class="percentage-label"></span>
+                        </div>
+                    </div>
+                    <div class="prediction" id="boat">
+                        <label>Boat</label>
+                        <div class="progress-bar">
+                            <div class="progress" id="boat-bar"></div>
+                            <span id="boat-percentage" class="percentage-label"></span>
+                        </div>
+                    </div>
+                    <div class="prediction" id="brogue">
+                        <label>Brogue</label>
+                        <div class="progress-bar">
+                            <div class="progress" id="brogue-bar"></div>
+                            <span id="brogue-percentage" class="percentage-label"></span>
+                        </div>
+                    </div>
+                    <div class="prediction" id="clog">
+                        <label>Clog</label>
+                        <div class="progress-bar">
+                            <div class="progress" id="clog-bar"></div>
+                            <span id="clog-percentage" class="percentage-label"></span>
+                        </div>
+                    </div>
+                    <div class="prediction" id="sneaker">
+                        <label>Sneaker</label>
+                        <div class="progress-bar">
+                            <div class="progress" id="sneaker-bar"></div>
+                            <span id="sneaker-percentage" class="percentage-label"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadImage(event) {
+            var image = document.getElementById('imge-loaded');
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    canvas.width = 224;
+                    canvas.height = 224;
+                    ctx.drawImage(img, 0, 0, 224, 224);
+                    image.src = canvas.toDataURL();
+
+                    const output = tf.browser.fromPixels(canvas);
+                    const tensor = output.expandDims(0);
+                    const tfnormalized = tensor.div(255.0);
+                    console.log(tfnormalized);
+
+                    // Measure start time
+                    const startTime = performance.now();
+
+                    const predictions = globalThis.TensorFlowModel.predict(tfnormalized);
+                    const prediction_array = Array.from(predictions.dataSync());
+
+                    // Measure end time
+                    const endTime = performance.now();
+                    const inferenceTime = (endTime - startTime).toFixed(2);
+
+                    // Display inference time
+                    document.getElementById('inference-time').textContent = inferenceTime + ' ms';
+
+                    console.log(prediction_array);
+
+                    // Find the maximum prediction value
+                    const maxPrediction = Math.max(...prediction_array);
+                    const categories = ['ballet-flat', 'boat', 'brogue', 'clog', 'sneaker'];
+
+                    // Update progress bars and percentages
+                    categories.forEach((category, index) => {
+                        const barId = `${category}-bar`;
+                        const percentageId = `${category}-percentage`;
+                        const labelId = `${category}`;
+                        const value = prediction_array[index];
+                        const percentage = (value * 100).toFixed(0) + '%';
+                        updateProgressBar(barId, percentageId, labelId, value, percentage, value === maxPrediction);
+                    });
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function updateProgressBar(barId, percentageId, labelId, value, percentage, isMax) {
+            const progressBar = document.getElementById(barId);
+            const percentageLabel = document.getElementById(percentageId);
+            const label = document.getElementById(labelId);
+            progressBar.style.width = percentage;
+            percentageLabel.textContent = percentage;
+            percentageLabel.classList.toggle('highlight', isMax);
+
+            // Highlight the category with the maximum percentage
+            label.classList.toggle('highlight', isMax);
+        }
+    </script>
+</body>
+
+</html>
