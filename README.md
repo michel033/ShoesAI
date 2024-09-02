@@ -1,4 +1,4 @@
-aishoe
+#aishoe
 This project hosts a web application for classifying shoes into various categories such as Ballet Flat, Boat, Brogue, Clog, and Sneaker. The model is based on MobileNetV3 and has been trained on a synthetic bottle image dataset found on Kaggle.
 
 Dataset
