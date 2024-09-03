@@ -68,11 +68,17 @@ h1 {
     cursor: pointer;
 }
 
-img {
+#imge-loaded {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
     height: auto;
+    display: none;
+}
+
+#upload-message {
+    font-size: 16px;
+    color: gray;
 }
 
 .predictions-section {
@@ -131,20 +137,17 @@ img {
     font-weight: bold;
 }
 
+.highlight-bar {
+    background-color: #28a745;
+}
+
 @media (max-width: 768px) {
     .prediction-container {
         flex-direction: column;
     }
 
-    .image-section, .predictions-section {
+    .image-section,
+    .predictions-section {
         width: 100%;
     }
-}
-#imge-loaded {
-    display: none; 
-}
-
-#upload-message {
-    font-size: 16px;
-    color: gray;
 }
