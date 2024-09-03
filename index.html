@@ -68,7 +68,6 @@
                     ctx.drawImage(img, 0, 0, 224, 224);
                     image.src = canvas.toDataURL();
 
-                    // Hide the upload message and show the image
                     uploadMessage.style.display = 'none';
                     image.style.display = 'block';
 
@@ -76,37 +75,29 @@
                         .expandDims(0)
                         .div(255.0);
 
-                    // Measure inference time
                     const startTime = performance.now();
                     const predictions = await globalThis.TensorFlowModel.predict(tensor).data();
                     const endTime = performance.now();
                     const inferenceTime = (endTime - startTime).toFixed(2);
 
-                    // Display inference time
                     document.getElementById('inference-time').textContent = `${inferenceTime} ms`;
 
                     const categories = ['ballet-flat', 'boat', 'brogue', 'clog', 'sneaker'];
 
-                    // Create an array of objects with category and prediction value
                     const predictionObjects = categories.map((category, index) => ({
                         category: category,
                         value: predictions[index]
                     }));
 
-                    // Sort the prediction objects by value in descending order
                     predictionObjects.sort((a, b) => b.value - a.value);
 
-                    // Clear the current predictions
                     const predictionBars = document.getElementById('prediction-bars');
                     predictionBars.innerHTML = '';
 
-                    // Update progress bars and percentages in sorted order
                     predictionObjects.forEach((prediction, index) => {
                         const { category, value } = prediction;
                         const percentage = Math.round(value * 100) + '%';
 
-
-                        // Create prediction elements
                         const predictionDiv = document.createElement('div');
                         predictionDiv.className = 'prediction';
                         predictionDiv.id = category;
@@ -125,7 +116,6 @@
                         percentageLabel.className = 'percentage-label';
                         percentageLabel.textContent = percentage;
 
-                        // Apply highlight to the highest prediction
                         if (index === 0) {
                             label.classList.add('highlight');
                             percentageLabel.classList.add('highlight');
@@ -138,7 +128,6 @@
                         predictionDiv.appendChild(label);
                         predictionDiv.appendChild(progressBarDiv);
 
-                        // Append prediction div to the container
                         predictionBars.appendChild(predictionDiv);
                     });
                 };
