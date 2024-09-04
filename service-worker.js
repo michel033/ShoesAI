@@ -6,6 +6,7 @@ const urlsToCache = [
   '/shoeai/README.md',
   '/shoeai/favicon.ico',
   '/shoeai/manifest.json',
+  '/shoeai/service-worker.js',
   '/icon-192x192.png',
   '/icon-512x512.png',
   '/shoeai/tfjs/group1-shard1of2.bin',
